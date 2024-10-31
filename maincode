@@ -1,0 +1,176 @@
+%%writefile app.py
+import streamlit as st
+from datetime import datetime
+
+# Sidebar navigation
+st.sidebar.title("Client Portal")
+pages = [
+    "Dashboard", 
+    "Quote", 
+    "Artwork Requirements, Upload and Deadlines", 
+    "Proof Approval", 
+    "Production Updates", 
+    "Invoice & Payment", 
+    "Completion & Feedback"
+]
+selected_page = st.sidebar.radio("Navigate", pages)
+
+# Helper function to wrap content in HTML (if needed for further styling)
+def wrap_in_div(content):
+    return f"<div>{content}</div>"
+
+# Define content for each page
+if selected_page == "Dashboard":
+    st.markdown("<h1>Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h3>Welcome to Kamset's Client Portal</h3>", unsafe_allow_html=True)
+    st.write("Track the status of your job:")
+    st.progress(0.6)
+    st.markdown("**Current Stage**: Artwork Approved")
+    st.write("Important Dates:")
+    st.write("- Artwork Deadline: 01/12/2024")
+    st.write("- Estimated Completion: 01/20/2024")
+
+elif selected_page == "Quote":
+    st.markdown("<h1>Quote Details</h1>", unsafe_allow_html=True)
+    st.write("### **Job Number**: 112668")
+    st.write("#### **Description**: Blue Guitar Project")
+    st.markdown("## [**View Quote**](https://drive.google.com/file/d/1oqIU1gZ-hUZ25gvlN736FsFuMoeyJVNs/view?usp=sharing)")
+    
+    # Line separator below "View Quote"
+    st.markdown("---")
+
+    # Approval status display
+    st.markdown("### **Current Status:**")
+    quote_approved = st.checkbox("Approve Quote")
+
+    # Display the status with conditional color above the checkbox
+    if quote_approved:
+        st.markdown("<span style='color: green; font-weight: bold;'>Quote Approved and Kamset Notified</span>", unsafe_allow_html=True)
+    else:
+        st.markdown("<span style='color: red; font-weight: bold;'>Not Approved</span>", unsafe_allow_html=True)
+
+
+elif selected_page == "Artwork Requirements, Upload and Deadlines":
+    st.markdown("<h1>Artwork Requirements, Upload and Deadlines</h1>", unsafe_allow_html=True)
+    st.write("### **Please follow these guidelines for artwork submission to avoid significant job delays:**")
+    st.markdown("### [Read the Full Artwork Guidelines HERE](https://drive.google.com/file/d/1rEl88GINBRffpiwAmydKjDg6s8Ndoa2_/view?usp=share_link)")
+    
+    # Important Checklist
+    st.write("#### Quick Overview of Essential Guidelines:")
+    st.markdown("""
+    1. **PDF and Source Files**: Use **Acrobat 7 (PDF 1.6)**. Avoid Acrobat 4 (PDF 1.3) and PDF/FX standard.<br>
+    2. **Fonts and Text**: Embed or outline all fonts, using OpenType or TrueType. Avoid Postscript/Type 1 fonts.<br>
+    3. **Image Resolution**: Follow scale-based recommendations:<br>
+       - **100% (1:1)** scale: 75 ppi<br>
+       - **50% (2:1)** scale: 150 ppi<br>
+       - **25% (4:1)** scale: 300 ppi<br>
+    4. **Vector vs. Raster Elements**: Use **vector-based** text and logos to retain sharpness.<br>
+    5. **Gradients**: Be cautious with gradients; use test prints to prevent banding.<br>
+    6. **Color Consistency**: Ensure color consistency (RGB/CMYK); define spot colors with LAB values.<br>
+    7. **Document Cleanup**: Remove hidden layers and non-printing items. Keep layers intact.<br>
+    8. **Bleed Requirements**: Add a **3mm bleed** around artwork at 100% scale.<br>
+    9. **Adobe Illustrator Canvas Size**: Use **large canvas mode** for artwork over 5765mm.<br>
+    """, unsafe_allow_html=True)
+
+    st.write("") 
+    # Artwork Upload Deadlines Section
+    st.write("### Artwork Upload and Deadlines")
+     # Separator line
+    st.markdown("---")
+    
+    # Example deadlines with checkboxes to mark as complete/incomplete and file uploaders
+    deadline_1 = "**01 November 2024**: Blue Guitar A3 foamex"
+    deadline_2 = "**05 November 2024**: A3 Black and White Swedboard stands"
+    
+    # Checkbox and file uploader for first deadline
+    completed_1 = st.checkbox(f"{deadline_1}", key="deadline_1")
+    status_1 = "Complete and Kamset notified of upload" if completed_1 else "Incomplete"
+    status_color_1 = "green" if completed_1 else "red"
+    st.markdown(f"<span style='color: {status_color_1}; font-weight: bold;'>{status_1}</span>", unsafe_allow_html=True)
+    uploaded_file_1 = st.file_uploader("Upload file for this deadline", key="file_upload_1")
+    
+    # Separator line
+    st.markdown("---")
+    
+    # Checkbox and file uploader for second deadline
+    completed_2 = st.checkbox(f"{deadline_2}", key="deadline_2")
+    status_2 = "Complete and Kamset notified of upload" if completed_2 else "Incomplete"
+    status_color_2 = "green" if completed_2 else "red"
+    st.markdown(f"<span style='color: {status_color_2}; font-weight: bold;'>{status_2}</span>", unsafe_allow_html=True)
+    uploaded_file_2 = st.file_uploader("Upload file for this deadline", key="file_upload_2")
+    
+    # Separator line
+    st.markdown("---")
+    
+    # Custom styled label for general file uploader
+    st.markdown("<h3 style='font-size: 24px;'>Upload any other files here:</h3>", unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("")
+    if uploaded_file is not None:
+        st.success("File uploaded successfully")
+
+elif selected_page == "Proof Approval":
+    st.markdown("<h1>Proof Approval</h1>", unsafe_allow_html=True)
+    
+    # Display proof image
+    image_url = "https://raw.githubusercontent.com/BK86Dev/portal-test/main/BlueGuitar.jpeg"
+    st.image(image_url, caption="Proof Preview", width=300)
+    
+    # Prompt for feedback
+    st.write("Please review the proof and provide your feedback.")
+    
+    # Button to approve proof
+    if st.button("Approve"):
+        st.success("Proof Approved")
+
+    # Button to request changes and show feedback box if requested
+    if "show_feedback_box" not in st.session_state:
+        st.session_state.show_feedback_box = False
+
+    if st.button("Request Changes"):
+        st.session_state.show_feedback_box = True
+
+    # Display feedback box if Request Changes is pressed
+    if st.session_state.show_feedback_box:
+        st.write("### Provide Feedback")
+        feedback_text = st.text_area("Enter your feedback")
+
+        if st.button("Submit Feedback"):
+            if feedback_text:
+                # Initialize feedback storage in session state
+                if "feedback_thread" not in st.session_state:
+                    st.session_state.feedback_thread = []
+                
+                # Add feedback with timestamp
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                st.session_state.feedback_thread.append(f"{timestamp}: {feedback_text}")
+                
+                # Clear the text area after submitting
+                feedback_text = ""
+                st.success("Feedback submitted.")
+            else:
+                st.warning("Please enter feedback before submitting.")
+    
+    # Display feedback thread if there are feedback entries
+    if "feedback_thread" in st.session_state and st.session_state.feedback_thread:
+        st.write("### Feedback Thread")
+        for feedback_entry in st.session_state.feedback_thread:
+            st.markdown(f"- {feedback_entry}")
+
+elif selected_page == "Production Updates":
+    st.markdown("<h1>Production Updates</h1>", unsafe_allow_html=True)
+    st.write("Track the progress of your job:")
+    st.write("- Current Status: In Production")
+    st.progress(0.8)
+
+elif selected_page == "Invoice & Payment":
+    st.markdown("<h1>Invoice & Payment</h1>", unsafe_allow_html=True)
+    st.write("**Total Amount Due**: $1400")
+    if st.button("Pay Now"):
+        st.success("Payment Processed Successfully")
+
+elif selected_page == "Completion & Feedback":
+    st.markdown("<h1>Completion & Feedback</h1>", unsafe_allow_html=True)
+    st.write("Thank you for working with Kamset!")
+    feedback = st.text_area("Leave your feedback")
+    if st.button("Submit Feedback"):
+        st.success("Feedback submitted. Thank you!")
